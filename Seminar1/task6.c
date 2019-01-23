@@ -1,6 +1,11 @@
 #include "stdio.h"
 /*
 Written by Johan Engström.
+2019-01-23
+
+Given two floating point arrays x and y of length len, square the numbers
+in the x array and store the value in reverse order in array y.
+The function must not return any value-
 */
 
 void square_reverse(double *x, double *y, int len){

@@ -1,6 +1,15 @@
 #include "stdio.h"
 /*
 Written by Johan Engström.
+2019-01-23
+
+Write the code for the incomplete functions adder() (that was empty)
+and foo() (only containing const int k = 10;).
+The function adder() is of the sort void and should take in three
+int pointers (x, y, z) and add x and y values to z.
+
+The function foo() has one parameter int a and should add
+the constant k to a and return the value.
 */
 
 void adder(const int *x, const int *y, int *z){
