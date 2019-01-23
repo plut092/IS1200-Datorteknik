@@ -12,7 +12,7 @@ int foo(int a){
   return a + k;
 }
 
-int main(int argc, char const *argv[]) {
+int main() {
   int a = 4;
   int b = 6;
   int c = 0;
