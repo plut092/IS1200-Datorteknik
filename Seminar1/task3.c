@@ -9,7 +9,7 @@ The function adder() is of the sort void and should take in three
 int pointers (x, y, z) and add x and y values to z.
 
 The function foo() has one parameter int a and should add
-the constant k to a and return the value.
+the constant k to a and return the value by using the function adder().
 */
 
 void adder(const int *x, const int *y, int *z){
@@ -18,7 +18,9 @@ void adder(const int *x, const int *y, int *z){
 
 int foo(int a){
   const int k = 10;
-  return a + k;
+  int sum;
+  adder(&a, &k, &sum);
+  return sum;
 }
 
 int main() {
