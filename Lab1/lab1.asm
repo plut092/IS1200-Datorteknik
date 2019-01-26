@@ -23,8 +23,8 @@ la	$a0,timstr
 li	$v0,4
 syscall
 nop
-# wait a little
-li	$a0,2
+# wait a little, 2 has constant of 265 for a second
+li	$a0,1000
 jal	delay
 nop
 # call tick
@@ -75,8 +75,36 @@ nop
 # you can write your code for subroutine "hexasc" below this line
 
 delay:
-jr $ra
+addi	$t0,$0,0	# constant for how many iterations of the for-loop
+add	$t1,$0,$0	# variable i
+      # $a0 is the variable for ms
+# test for negative number $a0
+slt	$t2,$a0,$0
+beq	$t2,1,delayEnd	# if $a0 < 0 then end delay
 nop
+j	delayWhileLoop
+nop
+delayWhileLoop:
+beq	$a0,$0,delayEnd
+nop
+addi	$a0,$a0,-1
+j	delayForLoop
+nop
+
+delayForLoop:
+beq	$t1,$t0, delayForEnd	# i = $t0 then stop for-loop
+nop
+addi	$t1,$t1,1	# increment variable i 	in for-loop
+j	delayForLoop
+nop
+delayForEnd:
+add	$t1,$0,$0	# resets i = 0
+j	delayWhileLoop
+nop
+delayEnd:
+jr	$ra
+nop
+
 
 time2string:
 # $a0 output address from time2string.
@@ -88,6 +116,7 @@ srl	$a0,$a0,12	# shifting the value for the hexasc function
 PUSH	($a1)		# Pushing values that needs to be saved during hexasc
 PUSH	($ra)
 jal	hexasc		# converts numbers into hexascii symbols
+nop
 POP	($ra)		# retrieving the saved values
 POP	($a1)
 POP	($a0)
@@ -99,6 +128,7 @@ srl	$a0,$a0,8
 PUSH	($a1)
 PUSH	($ra)
 jal	hexasc
+nop
 POP	($ra)
 POP	($a1)
 POP	($a0)
@@ -116,6 +146,7 @@ srl	$a0,$a0,4
 PUSH	($a1)
 PUSH	($ra)
 jal	hexasc
+nop
 POP	($ra)
 POP	($a1)
 POP	($a0)
@@ -127,6 +158,7 @@ andi	$a0,$a1,0x0f	# 4th iteration
 PUSH	($a1)
 PUSH	($ra)
 jal	hexasc
+nop
 POP	($ra)
 POP	($a1)
 POP	($a0)
@@ -137,6 +169,7 @@ add	$v0,$0,$0
 sb	$v0,5($a0)
 
 jr	$ra		# returns from the subrutine time2string
+nop
 
 
 hexasc:
@@ -147,9 +180,11 @@ beq	$t1,$0 hexascLetters # branching to handle numbers larger than 9
 nop
 addi	$v0,$a0,0x30	# starting at the value of ascii 0 with $a0 offset
 jr	$ra
+nop
 
 hexascLetters:
 addi	$v0,$a0,0x37	# starting at the ascii symbol 10 places before of A with $a0 offset
 jr $ra
+nop
 
 # 17 = 10001 is masked to 0001 so because of overflow it's read as 1
