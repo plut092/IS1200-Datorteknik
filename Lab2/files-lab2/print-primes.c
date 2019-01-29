@@ -5,12 +5,24 @@
  This file is in the public domain.
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define COLUMNS 6
+int column_count = 0;
 
+int is_prime(int n){
+  if (n < 2) { // if n is less than 2 it's not prime (return 0)
+    return 0;
+  }
+  for (int i = 2; i < sqrt(n); i++) {
+    if (!(n%i)) { // if remainder (n%i) then i is not a factor
+      return 0;
+    }
+  }
+  return 1; // if no number i up to sqrt(n) is a factor n is prime
+}
 
 void print_primes(int n){
   // Should print out all prime numbers less than 'n'
@@ -18,17 +30,16 @@ void print_primes(int n){
   // the number of columns is stated in the define
   // COLUMNS
 
-  printf("%10d ", 2);
-  printf("%10d ", 3);
-  printf("%10d ", 5);
-  printf("%10d ", 7);
-  printf("%10d ", 11);
-  printf("%10d ", 13);
-  printf("\n");
-  printf("%10d ", 17);
-  printf("%10d ", 19);
-
-  printf("\n");
+  for (int i = 2; i <= n; i++) {
+    if (is_prime(i)) { // printing i = 2 up to n if they are prime
+      column_count++;
+      printf("%10d ", i);
+    }
+    if(column_count == 6){ // make new row if column = COLUMNS
+      printf("\n");
+      column_count = 0;
+    }
+  }
 }
 
 // 'argc' contains the number of program arguments, and
@@ -41,5 +52,3 @@ int main(int argc, char *argv[]){
     printf("Please state an interger number.\n");
   return 0;
 }
-
- 
