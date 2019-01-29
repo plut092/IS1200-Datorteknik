@@ -24,6 +24,15 @@ int is_prime(int n){
   return 1; // if no number i up to sqrt(n) is a factor n is prime
 }
 
+void print_number(int n) {
+  column_count++;
+  printf("%10d ", n);
+  if (column_count == COLUMNS) {
+    printf("\n");
+    column_count = 0;
+  }
+}
+
 void print_primes(int n){
   // Should print out all prime numbers less than 'n'
   // with the following formatting. Note that
@@ -35,7 +44,7 @@ void print_primes(int n){
       column_count++;
       printf("%10d ", i);
     }
-    if(column_count == 6){ // make new row if column = COLUMNS
+    if(column_count == COLUMNS){ // make new row if column = COLUMNS
       printf("\n");
       column_count = 0;
     }
@@ -50,5 +59,17 @@ int main(int argc, char *argv[]){
     print_primes(atoi(argv[1]));
   else
     printf("Please state an interger number.\n");
+/*
+    print_number(1);
+    print_number(2);
+    print_number(3);
+    print_number(4);
+    print_number(5);
+    print_number(6);
+    print_number(7);
+    print_number(8);
+    print_number(9);
+    print_number(10);
+*/
   return 0;
 }
