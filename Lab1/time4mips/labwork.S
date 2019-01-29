@@ -7,49 +7,49 @@
 # Please keep the two macros PUSH and POP unchanged
 #
 .macro	PUSH reg
-		addi		$sp,$sp,-4
-		sw			\reg,0($sp)
+addi	$sp,$sp,-4
+sw	\reg,0($sp)
 .endm
 
 .macro	POP reg
-		lw			\reg,0($sp)
-		addi		$sp,$sp,4
+lw	\reg,0($sp)
+addi	$sp,$sp,4
 .endm
 #
 # Please add your own code below this line
 #
 
-.globl	delay
-.globl	time2string
+.globl	 delay
+.globl	 time2string
 .text
 delay:
-  addi $t0,$0,13400	        # constant for how many iterations of the for-loop
-  add  $t1,$0,$0	        # variable i
+  addi 	 $t0,$0,13400	        # constant for how many iterations of the for-loop
+  add 	 $t1,$0,$0	        # variable i
   # $a0 is the variable for ms
   # test for negative number $a0
   slt	 $t2,$a0,$0
   beq	 $t2,1,delayEnd	        # if $a0 < 0 then end delay
   nop
-  j	   delayWhileLoop
+  j	 delayWhileLoop
   nop
 delayWhileLoop:
   beq	 $a0,$0,delayEnd
   nop
-  addi $a0,$a0,-1
-  j	   delayForLoop
+  addi   $a0,$a0,-1
+  j	 delayForLoop
   nop
 delayForLoop:
-  beq	$t1,$t0, delayForEnd	# i = $t0 then stop for-loop
+  beq	 $t1,$t0, delayForEnd	# i = $t0 then stop for-loop
   nop
-  addi	$t1,$t1,1	        # increment variable i 	in for-loop
-  j	delayForLoop
+  addi	 $t1,$t1,1	        # increment variable i 	in for-loop
+  j	 delayForLoop
   nop
 delayForEnd:
-  add	$t1,$0,$0	        # resets i = 0
-  j	delayWhileLoop
+  add	 $t1,$0,$0	        # resets i = 0
+  j	 delayWhileLoop
   nop
 delayEnd:
-  jr	$ra
+  jr	 $ra
   nop
 
 time2string:
