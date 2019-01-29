@@ -23,8 +23,8 @@ la	$a0,timstr
 li	$v0,4
 syscall
 nop
-# wait a little, 2 has constant of 265 for a second. 900 constant for 1000ms
-li	$a0,1000
+# wait a little
+li	$a0,2
 jal	delay
 nop
 # call tick
@@ -107,84 +107,70 @@ nop
 
 
 time2string:
+# two arguments to start with:
 # $a0 output address from time2string.
 # $a1 contains time-info, only 16 lowest bits are used
+		PUSH		$s0							# pushing to the stack to follow calling convention
+		PUSH		$s1
+		PUSH		$ra							# stores the return address untill end of function
+		la			$s0,0($a0)			# output address --> $s0 ($a0 will be used for hexasc)
+		la			$s1,0($a1)			# time-info address --> $s1 ($a1 may change in hexasc)
 # handeling x to output (x0:00)
-PUSH	($a0)		# pushing the output address value to save it
-andi	$a0,$a1,0x0f000	# masking the bit from time-info
-srl	$a0,$a0,12	# shifting the value for the hexasc function
-PUSH	($a1)		# Pushing values that needs to be saved during hexasc
-PUSH	($ra)
-jal	hexasc		# converts numbers into hexascii symbols
-nop
-POP	($ra)		# retrieving the saved values
-POP	($a1)
-POP	($a0)
-sb	$v0,0($a0)	# stores the byte with the offset of what place the number will have in the outputstring
-PUSH	($a0)		# saves the output address value before next iteration
+		srl			$a0,$s1,12			# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
+		nop
+		sb			$v0,0($s0)			# x0:00 --> output address
 # handeling x to output (0x:00)
-andi	$a0,$a1,0x0f00	# 2nd iteration
-srl	$a0,$a0,8
-PUSH	($a1)
-PUSH	($ra)
-jal	hexasc
-nop
-POP	($ra)
-POP	($a1)
-POP	($a0)
-sb	$v0,1($a0)
-
-#loading : to output
-andi	$v0,$v0,0	# storing a : to output
-addi	$v0,$v0,0x3a
-sb	$v0,2($a0)
-PUSH	($a0)
-
+		srl			$a0,$s1,8				# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
+		nop
+		sb			$v0,1($s0)			# x0:00 --> output address
+# loading : to output
+		li			$v0, 0x3a				# $v0 = 0x3a (':' in ascii)
+		sb			$v0,2($s0)			# ':' --> output
 # handeling x to output(00:x0)
-andi	$a0,$a1,0x0f0	# 3rd iteration
-srl	$a0,$a0,4
-PUSH	($a1)
-PUSH	($ra)
-jal	hexasc
-nop
-POP	($ra)
-POP	($a1)
-POP	($a0)
-sb	$v0,3($a0)
-PUSH	($a0)
-
+		srl			$a0,$s1,4				# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
+		nop
+		sb			$v0,3($s0)			# x0:00 --> output address
 # handeling x to output (00:0x)
-andi	$a0,$a1,0x0f	# 4th iteration
-PUSH	($a1)
-PUSH	($ra)
-jal	hexasc
-nop
-POP	($ra)
-POP	($a1)
-POP	($a0)
-sb	$v0,4($a0)
-
+		andi		$a0,$s1,0x0f
+		## if (xx:x9) branch to time2stringNINE (surprise lab assignment)
+		addi		$t0,$0,9				# temp variable for branching to time2stringNINE
+		beq			$t0,$a0,time2stringNINE
+		nop
+		## else
+		jal			hexasc					# converts 4 bit number into ascii
+		nop
+		sb			$v0,4($s0)
 # null byte for end of string
-add	$v0,$0,$0
-sb	$v0,5($a0)
-
-jr	$ra		# returns from the subrutine time2string
-nop
-
+		add			$v0,$0,$0
+		sb			$v0,5($s0)
+time2stringEnd:
+		POP			$ra
+		POP			$s1
+		POP			$s0
+		jr			$ra							# returns from the subrutine time2string
+		nop
+time2stringNINE:						# typing out xx:xNINE when the second is 9
+		li			$v0,0x4e494e45	# NINE --> $v0
+		sw			$v0,4($s0)			# store NINE in output address
+		add			$v0,$0,$0				# end of string (null byte) to $v0
+		sb			$v0,8($s0)			#	store null byte in output address
+		j				time2stringEnd
+		nop
 
 hexasc:
-andi	$a0,$a0,0x0f	# masking the 4 lsb, because only the 4 lsb are to be used
-addi	$t0,$0,10	# $t0 variable for slt check if $a0 < 10
-slt	$t1,$a0,$t0	# $t1 is set to 1 if $a0 < $t0
-beq	$t1,$0 hexascLetters # branching to handle numbers larger than 9
-nop
-addi	$v0,$a0,0x30	# starting at the value of ascii 0 with $a0 offset
-jr	$ra
-nop
+		andi		$a0,$a0,0x0f		# masking the 4 lsb, because only the 4 lsb are to be used
+		addi		$t0,$0,10				# $t0 variable for slt check if $a0 < 10
+		slt			$t1,$a0,$t0			# $t1 is set to 1 if $a0 < $t0
+		beq			$t1,$0, hexascLetters # branching to handle numbers larger than 9
+		nop
+		addi		$v0,$a0,0x30		# starting at the value of ascii 0 with $a0 offset
+		jr			$ra
+		nop
 
 hexascLetters:
-addi	$v0,$a0,0x37	# starting at the ascii symbol 10 places before of A with $a0 offset
-jr $ra
-nop
-
-# 17 = 10001 is masked to 0001 so because of overflow it's read as 1
+		addi		$v0,$a0,0x37		# starting at the ascii symbol 10 places before of A with $a0 offset
+		jr			$ra
+		nop

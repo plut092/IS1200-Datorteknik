@@ -55,77 +55,59 @@ delayEnd:
 
 
 time2string:
-		# $a0 output address from time2string.
-		# $a1 contains time-info, only 16 lowest bits are used
+# two arguments to start with:
+# $a0 output address from time2string.
+# $a1 contains time-info, only 16 lowest bits are used
+		PUSH		$s0							# pushing to the stack to follow calling convention
+		PUSH		$s1
+		PUSH		$ra							# stores the return address untill end of function
+		la			$s0,0($a0)			# output address --> $s0 ($a0 will be used for hexasc)
+		la			$s1,0($a1)			# time-info address --> $s1 ($a1 may change in hexasc)
 # handeling x to output (x0:00)
-		PUSH		$a0							# pushing the output address value to save it
-		andi		$a0,$a1,0x0f000	# masking the bit from time-info
-		srl			$a0,$a0,12			# shifting the value for the hexasc function
-		PUSH		$a1							# Pushing values that needs to be saved during hexasc
-		PUSH		$ra
-		jal			hexasc					# converts numbers into hexascii symbols
+		srl			$a0,$s1,12			# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
 		nop
-		POP			$ra							# retrieving the saved values
-		POP			$a1
-		POP			$a0
-		sb			$v0,0($a0)			# stores the byte with the offset of what place the number will have in the outputstring
-		PUSH		$a0							# saves the output address value before next iteration
+		sb			$v0,0($s0)			# x0:00 --> output address
 # handeling x to output (0x:00)
-		andi		$a0,$a1,0x0f00	# 2nd iteration
-		srl			$a0,$a0,8
-		PUSH		$a1
-		PUSH		$ra
-		jal			hexasc
+		srl			$a0,$s1,8				# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
 		nop
-		POP			$ra
-		POP			$a1
-		POP			$a0
-		sb			$v0,1($a0)
+		sb			$v0,1($s0)			# x0:00 --> output address
 # loading : to output
-		andi		$v0,$v0,0				# storing a : to output
-		addi		$v0,$v0,0x3a
-		sb			$v0,2($a0)
-		PUSH		$a0
+		li			$v0, 0x3a				# $v0 = 0x3a (':' in ascii)
+		sb			$v0,2($s0)			# ':' --> output
 # handeling x to output(00:x0)
-		andi		$a0,$a1,0x0f0		# 3rd iteration
-		srl			$a0,$a0,4
-		PUSH		$a1
-		PUSH		$ra
-		jal			hexasc
+		srl			$a0,$s1,4				# shifting the value for the hexasc function
+		jal			hexasc					# converts 4 bit number into ascii
 		nop
-		POP			$ra
-		POP			$a1
-		POP			$a0
-		sb			$v0,3($a0)
-		PUSH		$a0
+		sb			$v0,3($s0)			# x0:00 --> output address
 # handeling x to output (00:0x)
-		andi		$a0,$a1,0x0f		# 4th iteration
-		# check if the second is "9" then branches to time2stringNINE for lab assignment
+		andi		$a0,$s1,0x0f
+		## if (xx:x9) branch to time2stringNINE (surprise lab assignment)
 		addi		$t0,$0,9				# temp variable for branching to time2stringNINE
 		beq			$t0,$a0,time2stringNINE
 		nop
-		PUSH		$a1
-		PUSH		$ra
-		jal			hexasc
+		## else
+		jal			hexasc					# converts 4 bit number into ascii
 		nop
-		POP			$ra
-		POP			$a1
-		POP			$a0
-		sb			$v0,4($a0)
+		sb			$v0,4($s0)
 # null byte for end of string
 		add			$v0,$0,$0
-		sb			$v0,5($a0)
+		sb			$v0,5($s0)
 time2stringEnd:
+		POP			$ra
+		POP			$s1
+		POP			$s0
 		jr			$ra							# returns from the subrutine time2string
 		nop
 time2stringNINE:						# typing out xx:xNINE when the second is 9
-		POP			$a0							# getting the return address from stack
-		li			$v0,0x4e494e45	# puts NINE in variable
-		sw			$v0,4($a0)			# store NINE in output address
-		add			$v0,$0,$0				# put end of string (null byte) to variable
-s		sb			$v0,8($a0)			#	store null byte in output address
+		li			$v0,0x454e494e	# NINE --> $v0
+		sw			$v0,4($s0)			# store NINE in output address
+		add			$v0,$0,$0				# end of string (null byte) to $v0
+		sb			$v0,8($s0)			#	store null byte in output address
 		j				time2stringEnd
 		nop
+
 hexasc:
 		andi		$a0,$a0,0x0f		# masking the 4 lsb, because only the 4 lsb are to be used
 		addi		$t0,$0,10				# $t0 variable for slt check if $a0 < 10
