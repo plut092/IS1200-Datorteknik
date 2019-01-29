@@ -41,7 +41,6 @@ void print_primes(int n){
     }
   }
 }
-
 // 'argc' contains the number of program arguments, and
 // 'argv' is an array of char pointers, where each
 // char pointer points to a null-terminated string.
