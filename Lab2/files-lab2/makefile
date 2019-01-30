@@ -1,5 +1,5 @@
-primemake: print-primes.c
-	gcc -o print-primes print-primes.c
+sievesmake: sieves.c
+	gcc -o sieves sieves.c
 
-run: print-primes
-	./print-primes 107
+run: sieves
+	./sieves 152

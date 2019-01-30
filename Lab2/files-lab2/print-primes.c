@@ -10,7 +10,7 @@
 #include <math.h>
 
 #define COLUMNS 6
-int column_count = 0;
+int cc_print_number = 0;  //column count global variable for print_number()
 
 int is_prime(int n){
   if (n < 2) { // if n is less than 2 it's not prime (return 0)
@@ -25,11 +25,11 @@ int is_prime(int n){
 }
 
 void print_number(int n) {
-  column_count++;
+  cc_print_number++; // cc = column count
   printf("%10d ", n);
-  if (column_count == COLUMNS) {
+  if (cc_print_number == COLUMNS) {
     printf("\n");
-    column_count = 0;
+    cc_print_number = 0;
   }
 }
 
@@ -38,7 +38,7 @@ void print_primes(int n){
   // with the following formatting. Note that
   // the number of columns is stated in the define
   // COLUMNS
-
+  int column_count = 0;
   for (int i = 2; i <= n; i++) {
     if (is_prime(i)) { // printing i = 2 up to n if they are prime
       column_count++;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
     print_primes(atoi(argv[1]));
   else
     printf("Please state an interger number.\n");
-/*
+/*  // Testing of print_number function
     print_number(1);
     print_number(2);
     print_number(3);
