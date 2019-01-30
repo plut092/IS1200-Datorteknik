@@ -1,5 +1,5 @@
-sievesmake: sieves.c
-	gcc -o sieves sieves.c
+sieves-heapmake: sieves-heap.c
+	gcc -o sieves-heap sieves-heap.c
 
-run: sieves
-	./sieves 200
+run: sieves-heap.c
+	./sieves-heap

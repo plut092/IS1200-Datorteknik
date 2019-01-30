@@ -19,21 +19,22 @@ void print_number(int n) {
 
 void print_sieves(int n){
   // init bool heap with value true, 2 up to n (indicies are -2 of the number)
-  bool *prime_list = (bool *) malloc(n);
-  for (int i = 0; i < n; i++) {
-    prime_list[i] = 1;
-  }
+  bool *prime_list = (bool *) calloc(n);
+  // for (int i = 0; i < n; i++) {
+    // prime_list[i] = 1;
+  // }
+
   // algoritm Sieve of Eratosthenes - indicies are -2 of the number
   for (int i = 2; i <= sqrt(n); i++) {
     if (prime_list[i - 2]) {
       for (int j = i * i; j <= n; j += i) {
-        prime_list[j - 2] = 0;
+        prime_list[j - 2] = 1;
       }
     }
   }
   // print primes up to n
   for (int i = 2; i <= n; i++) {
-    if (prime_list[i - 2]) {
+    if (!prime_list[i - 2]) {
       print_number(i);
     }
   }
