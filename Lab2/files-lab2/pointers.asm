@@ -33,35 +33,35 @@ stop:	j	stop
 # function work()
 work:
 	PUSH	($ra)
-	la 	$a0,text1
-	la	$a1,list1
-	la	$a2,count
+	# loading arguments for copycodes
+	la 	$a0,text1 # arg1 pointer to string text1
+	la	$a1,list1	# arg2 char[] list1
+	la	$a2,count	# arg3 <datatype> count (int?)
+	jal	copycodes	# calling copycodes
+	# <void> copycodes has no return ($v0)
+	la 	$a0,text2	# arg1 pointer to string text2
+	la	$a1,list2	# arg2 char[] list2
+	la	$a2,count	# arg3 <datatype> count
 	jal	copycodes
-	
-	la 	$a0,text2
-	la	$a1,list2
-	la	$a2,count
-	jal	copycodes
+	# <void> copycodes has no return ($v0)
+	# <void> work has no return ($v0)
 	POP	($ra)
-	
-	
+
+
 # function copycodes()
 copycodes:
+# while loop with if statement in beq
 loop:
-	lb	$t0,0($a0)	
-	beq	$t0,$0,done
-	sw	$t0,0($a1)
+	lb	$t0,0($a0)	# store char from string text
+	beq	$t0,$0,done # while there is chars in text
+	sw	$t0,0($a1)	# store word to list
 
-	addi	$a0,$a0,1
-	addi	$a1,$a1,4
-	
-	lw	$t1,0($a2)
-	addi	$t1,$t1,1
-	sw	$t1,0($a2)
+	addi	$a0,$a0,1	# move to next byte (char) in string
+	addi	$a1,$a1,4	# move to next word in list
+# increment count by 1
+	lw	$t1,0($a2)	#
+	addi	$t1,$t1,1	# count++
+	sw	$t1,0($a2)	#
 	j	loop
 done:
 	jr	$ra
-		
-
-
-

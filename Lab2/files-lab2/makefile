@@ -1,5 +1,5 @@
-sievesmake: sieves.c
-	gcc -o sieves sieves.c
+pointersmake: pointers.c
+	gcc -o pointers pointers.c
 
-run: sieves
-	./sieves 200
+run: pointers.c
+	./pointers

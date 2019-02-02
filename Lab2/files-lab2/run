@@ -1,2 +1,0 @@
-gcc -o print-primes print-primes.c &&
-./print-primes 123
