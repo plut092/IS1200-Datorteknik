@@ -5,7 +5,7 @@ char* text1 = "This is a string.";
 char* text2 = "Yet another thing.";
 
 int count = 0;
-int list1[20]; // 20 = 80 / sizeof(int)
+int list1[20]; // 20 = 80 / sizeof(int) = 80 / 4
 int list2[20];
 
 void printlist(const int* lst){
@@ -22,16 +22,16 @@ void endian_proof(const char* c){
          (int)*c,(int)*(c+1), (int)*(c+2), (int)*(c+3));
 }
 
-void copycodes(char *text, int *list, int *count) {
+void copycodes(char *text, int *list) {
   while(*text){
     *(list++) = *(text++);
-    (*count)++;
+    count++;
   }
 }
 
 void work() {
-  copycodes(text1, list1, &count);
-  copycodes(text2, list2, &count);
+  copycodes(text1, list1);
+  copycodes(text2, list2);
 }
 
 int main(void){
