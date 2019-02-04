@@ -6,7 +6,7 @@
    This file should be changed by YOU! So you must
    add comment(s) here with your name(s) and date(s):
 
-   This file modified 2017-04-31 by Ture Teknolog 
+   This file modified 2017-04-31 by Ture Teknolog
 
    For copyright and licensing, see file COPYING */
 
@@ -27,7 +27,12 @@ void user_isr( void )
 /* Lab-specific initialization goes here */
 void labinit( void )
 {
-  return;
+  // init PORTE so bit 7:0 are outputs with TRISE
+  int volatile *trise = (int volatile *) 0xbf886100;
+  *trise = *trise & ~0xff; // clears bits 7:0
+
+  // init PORTD so 11:5 are inputs with TRISD
+  TRISDSET = (0x7f << 5);// 111 1111 = 7f shifted 5 bits left
 }
 
 /* This function is called repetitively from the main program */
@@ -37,6 +42,17 @@ void labwork( void )
   time2string( textstring, mytime );
   display_string( 3, textstring );
   display_update();
+
+  int volatile *porte = (int volatile *) 0xbf886110;
+  *porte += 1;
+
+  if (getbtns()) {
+    int btns = getbtns();
+    int sw = getsw();
+
+
+  }
+
   tick( &mytime );
   display_image(96, icon);
 }
