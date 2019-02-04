@@ -19,13 +19,14 @@ void print_number(int n) {
   }
 }
 
+/*
+  Init bool heap "prime_list" with value TRUE (#define: TRUE = 0 and FALSE = 1).
+  Since malloc would need init with a for-loop to set every value to true
+  calloc was used since it's setting values of prime_list to 0 directly.
+  2 up to n gives indicies -2 of the number.
+*/
 void print_sieves(int n){
-  /*
-    Init bool heap "prime_list" with value TRUE (#define: TRUE = 0 and FALSE = 1).
-    Since malloc would need init with a for-loop to set every value to true
-    calloc was used since it's setting values of prime_list to 0 directly.
-    2 up to n gives indicies -2 of the number.
-  */
+  // init heap
   bool *prime_list = (bool *) calloc(n, sizeof(bool));
 
   // algoritm Sieve of Eratosthenes - indicies are -2 of the number
@@ -42,7 +43,7 @@ void print_sieves(int n){
       print_number(i);
     }
   }
-  free(prime_list);
+  free(prime_list); // free heap memory to avoid memory leaks
 }
 
 int main(int argc, char *argv[]){
