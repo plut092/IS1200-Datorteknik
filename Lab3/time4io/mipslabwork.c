@@ -50,7 +50,15 @@ void labwork( void )
     int btns = getbtns();
     int sw = getsw();
 
-
+    if (btns & 0x1) {
+      mytime = (mytime & ~0x000f0) | (sw << 4);
+    }
+    if (btns & 0x2) {
+      mytime = (mytime & ~0x00f00) | (sw << 8);
+    }
+    if (btns & 0x4) {
+      mytime = (mytime & ~0x0f000) | (sw << 12);
+    }
   }
 
   tick( &mytime );
