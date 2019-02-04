@@ -40,6 +40,7 @@ void print_sieves(int n){
 }
 
 int main(int argc, char *argv[]){
+  // start program timer for time_spent executing program
   clock_t begin = clock();
 
   if(argc == 2)
@@ -47,6 +48,7 @@ int main(int argc, char *argv[]){
   else
     printf("Please state an interger number.\n");
 
+    // calculating and printing time_spent on execution of program
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("\nExecution time: %.10f s\n", time_spent);
@@ -54,5 +56,5 @@ int main(int argc, char *argv[]){
 }
 
 // within 2 seconds:  n = 770 000
-// within 10 seconds: n = ~2 044 000 more gives
-//                        segmentation fault (out of memory on stack)
+// within 10 seconds: n = ~2 044 000
+//more gives fault (out of memory on stack)
