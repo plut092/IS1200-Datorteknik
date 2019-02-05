@@ -27,6 +27,7 @@ addi	$sp,$sp,4
 enable_interrupt:
   ei
   jr  $ra
+  nop
 
 delay:
   addi 	 $t0,$0,13400	        # constant for how many iterations of the for-loop
