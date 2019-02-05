@@ -28,24 +28,25 @@ void user_isr( void )
 void labinit( void )
 {
   // init PORTE so bit 7:0 are outputs with TRISE
-  int volatile *trise = (int volatile *) 0xbf886100;
+  int volatile *trise = 0xbf886100;
   *trise = *trise & ~0xff; // clears bits 7:0
 
   // init PORTD so 11:5 are inputs with TRISD
   TRISDSET = (0x7f << 5);// 111 1111 = 7f shifted 5 bits left
+
+  // init timer2
+  T2CON = 0x0;                  // disable timer2 and clear control registers
+  T2CON = 0x7 << 4;             // set prescaler (TCKPS at bits 6:4) to 1:256
+  PR2 = (80000000 / 256) / 10;  // 10 timeouts per second (clock frequency/prescaler/10times per second)
+  TMR2 = 0x0;                   // clear timer register
+  T2CONSET = 0x1 << 15;         // enable timer2
+
+
 }
 
 /* This function is called repetitively from the main program */
 void labwork( void )
 {
-  delay( 1000 );
-  time2string( textstring, mytime );
-  display_string( 3, textstring );
-  display_update();
-
-  int volatile *porte = (int volatile *) 0xbf886110;
-  *porte += 1;
-
   if (getbtns()) {
     int btns = getbtns();
     int sw = getsw();
@@ -61,6 +62,16 @@ void labwork( void )
     }
   }
 
-  tick( &mytime );
+  int volatile *porte = (int volatile *) 0xbf886110;
+  *porte += 1;
+
+  if (IFS(0) & (0x1 << 8)) {
+    IFSCLR(0) = (0x1 << 8);
+    time2string( textstring, mytime );
+    display_string( 3, textstring );
+    display_update();
+    tick( &mytime );
+  }
+
   display_image(96, icon);
 }
