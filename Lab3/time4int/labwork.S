@@ -21,7 +21,7 @@ addi	$sp,$sp,4
 
 .globl	delay
 .globl	time2string
-.global  enable_interrupt
+.globl  enable_interrupt
 .text
 
 enable_interrupt:

@@ -22,16 +22,16 @@ void endian_proof(const char* c){
          (int)*c,(int)*(c+1), (int)*(c+2), (int)*(c+3));
 }
 
-void copycodes(char *text, int *list) {
+void copycodes(char *text, int *list, int *count) {
   while(*text){
     *(list++) = *(text++);
-    count++;
+    (*count)++;
   }
 }
 
 void work() {
-  copycodes(text1, list1);
-  copycodes(text2, list2);
+  copycodes(text1, list1, &count);
+  copycodes(text2, list2, &count);
 }
 
 int main(void){

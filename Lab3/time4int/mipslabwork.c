@@ -22,20 +22,26 @@ char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
 void user_isr( void ) {
-  /*
-    check  timeoutcount == 10 for IRS to
-    run every 10 invocations of user_irs
-  */
-  timeoutcount++;
+  if (IFS(0) & (0x1 << 8)) {
+    /*
+      check  timeoutcount == 10 for IRS to
+      run every 10 invocations of user_irs
+    */
+    IFSCLR(0) = 0x1 << 8; // set TMR2 IF to 0
+    timeoutcount++;
 
-  if (timeoutcount == 10) {
-    timeoutcount = 0; // reset timeoutcount at 10 invocations of user_irs
-    time2string( textstring, mytime );
-    display_string( 3, textstring );
-    display_update();
-    tick( &mytime );
+    if (timeoutcount == 10) {
+      timeoutcount = 0; // reset timeoutcount at 10 invocations of user_irs
+      time2string( textstring, mytime );
+      display_string( 3, textstring );
+      display_update();
+      tick( &mytime );
+    }
   }
-  IFSCLR(0) = 0x1 << 8; // set TMR2 IF to 0
+  if(IFS(0) & (0x1 << 15)) {
+    IFSCLR(0) = 0x1 << 15; // set INT3 IF to 0
+    PORTE = PORTE + 1;
+  }
 }
 
 /* Lab-specific initialization goes here */
@@ -45,8 +51,12 @@ void labinit( void )
   int volatile *trise = (int volatile *) 0xbf886100;
   *trise = *trise & ~0xff; // clears bits 7:0
 
+  // init PORTE to zero at startup
+  PORTE = 0x0;
+
   // init PORTD so 11:5 are inputs with TRISD
   TRISDSET = (0x7f << 5);// 111 1111 = 7f shifted 5 bits left
+
 
   // init timer2
   T2CON = 0x0;                  // disable timer2 and clear control registers
@@ -55,9 +65,14 @@ void labinit( void )
   TMR2 = 0x0;                   // clear timer register
   T2CONSET = 0x1 << 15;         // enable timer2
 
-  // init interrupt
-  IPCSET(2) = 0x2 << 2; // interrupt priority set to 2
+  // init interrupt from Timer2
+  IPCSET(2) = 0x3 << 2; // interrupt priority set to 3
   IECSET(0) = 0x1 << 8; // enable TMR2 interrupt
+
+  // init interrupt from SW3
+  IPCSET(3) = 0x2 << 26; // interrupt priority set to 2
+  IECSET(0) = 0x1 << 15; // enable SW3 interrupt
+
   enable_interrupt();
 }
 
