@@ -1,0 +1,51 @@
+.data
+.align 2
+.text
+main:
+	addi	$a0,$0,1
+	
+	#end of setup
+	
+	#check for n=0, n=1
+	beq	$a0,$0,zeroAndOne
+	add	$0,$0,$0	# nop
+	beq	$a0,1,zeroAndOne
+	add	$0,$0,$0	# nop
+	#
+	
+	add	$a1,$a0,$0	# $a1 is the value that will be added repeatedly
+	addi	$a0,$a0,-1	# $a0 is decremented to how many times $a1 will be added
+	add	$a2,$a0,$0	# setting up $a2 as counter
+
+	beq	$0,$0,multloop
+	add	$0,$0,$0	# nop
+loop:	
+	addi	$a0,$a0,-1	
+	
+	beq	$a0,$0,stop	# while $a0 > 0 multiply
+	add	$0,$0,$0	# nop
+	
+	add	$a1,$v0,$0	# stores the new value for repeated addition
+	add	$v0,$0,$0	# the sum register is set to 0 before each multiplication
+	
+	add	$a2,$a0,$0	# stores the new value of counter
+	
+	
+	beq	$0,$0,multloop
+	add	$0,$0,$0	# nop
+	
+multloop:
+	addi	$a2,$a2,-1	# decrement the counter for each iteration
+	add	$v0,$v0,$a1	# sum the addition in $v0
+	
+	beq	$a2,$0,loop	# while $a2 > 0 do addition, else multiply with the next number
+	add	$0,$0,$0	# nop
+	beq	$0,$0,multloop
+	add	$0,$0,$0	# nop
+
+zeroAndOne:
+	addi	$v0,$0,1	# special cases gets direct values and the program stops
+
+stop:
+	beq	$0,$0,stop	# end of program
+	add	$0,$0,$0	# nop
