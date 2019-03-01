@@ -29,7 +29,7 @@ int main(void) {
 	ODCE = 0x0;
 	TRISECLR = 0xFF;
 	PORTE = 0x0;
-	
+
 	/* Output pins for display signals */
 	PORTF = 0xFFFF;
 	PORTG = (1 << 9);
@@ -55,19 +55,29 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 
 	display_init();
-	display_string(0, "KTH/ICT lab");
-	display_string(1, "in Computer");
-	display_string(2, "Engineering");
-	display_string(3, "Welcome!");
-	display_update();
+	display_string(0, "SNAKE");
+	display_string(1, "press any");
+	display_string(2, "button to");
+	display_string(3, "continue");
+	display_update_string();
 
 	display_image(96, icon);
 
 	labinit(); /* Do any lab-specific initialization */
 
+	while (!(PORTF & (0x1 << 1))){
+		delay(1);
+	}
+	PORTFCLR = (0x1 << 1);
+
+	/* Get a random seed for FOOD spawnposition */
+	random_seed_generator();
+
+
 	while( 1 )
 	{
 	  labwork(); /* Do lab-specific things again and again */
 	}
+
 	return 0;
 }
