@@ -24,7 +24,7 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
 //Snakefunctions
-void random_seed_generator() {
+void random_seed_generator() { // psuedo random seed generator
   int random_time = TMR2;
   int random_memory_address;
 	int random_memory_address2;
@@ -103,12 +103,14 @@ void put_food() {
 void draw_init_game() {
 	int i = 0;
   int j = 0;
+  // reset values to start the game
 	direction 			= RIGHT;
 	row							= 16;
 	col							= 64;
 	in_game 				= 1;
 	game_over				= 0;
 	score						= -1;
+  // init walls for gameplay
   for (i = 0; i < maxheight; i++) {
     for (j = 0; j < maxwidth; j++) {
       snakearray[i][j] = DIR_NULL; // set direction to previous pixel to NULL = 4
@@ -144,6 +146,7 @@ void run() {
 	uint8_t next_col = col;
 	uint8_t next_s_value; // next snakearray value
 
+  // check what direction next position will be
 	if (direction == UP) {
 		next_row = row - 1;
 	} else if (direction == RIGHT) {
@@ -153,7 +156,7 @@ void run() {
 	} else { // LEFT
 		next_col = col - 1;
 	}
-	next_s_value = snakearray[next_row][next_col];
+	next_s_value = snakearray[next_row][next_col]; // temp variable for next pos
 	// Check if next position of the snake is the wall, itself or food
 	if (pixel[next_row][next_col] == 1) {
 		if (next_s_value == WALL) {
@@ -187,6 +190,7 @@ void game_over_screen() {
 	display_update_string();
 }
 void clear_screen() {
+  // sets every pixel to white when game over
 	int i;
 	int j;
 	for (i = 0; i < maxheight; i++) {
@@ -330,21 +334,22 @@ void display_image(int x, const uint8_t *data) {
 	}
 }
 void display_update_screen(){
-	int x, y, k, value;
-	for(y = 0; y < 4; y++){
+	int d_col, d_page, d_page_row, value; // display_column/page/page_row
+	for(d_page = 0; d_page < 4; d_page++){
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
 		spi_send_recv(0x22);
-		spi_send_recv(y);
+		spi_send_recv(d_page);
 
 		spi_send_recv(0x00);
 		spi_send_recv(0x10);
 
 		DISPLAY_CHANGE_TO_DATA_MODE;
 
-		for(x = 0; x < 128; x++){
-			value = (pixel[y * 8][x]);
-			for(k = 1; k < 8; k++){
-				value |= (pixel[y * 8 + k][x]) << k;
+		for(d_col = 0; d_col < 128; d_col++){
+			value = (pixel[d_page * 8][d_col]); //d_page * 8 lowest bit d_page_row 7:0
+			for(d_page_row = 1; d_page_row < 8; d_page_row++){
+        // puts the pixel state in value from lowest bit in byte to higest
+				value |= (pixel[d_page * 8 + d_page_row][d_col]) << d_page_row;
 			}
 			spi_send_recv(value);
 		}

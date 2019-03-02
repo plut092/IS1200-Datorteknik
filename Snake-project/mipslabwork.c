@@ -24,16 +24,12 @@ void user_isr( void ) {
       run every 10 invocations of user_irs
     */
     IFSCLR(0) = 0x1 << 8; // set TMR2 IF to 0
-    timeoutcount++;
 
-    if (timeoutcount == 10) {
-      timeoutcount = 0; // reset timeoutcount at 10 invocations of user_irs
-    }
     if(IFS(0) & (0x1 << 15)) {
       IFSCLR(0) = 0x1 << 15; // set INT3 IF to 0
       PORTE = PORTE + 1;
     }
-    // btn1 interrupt turn right
+    // btn1 turn right and continue from startscreen and game_over_screen
     if (PORTF & (0x1 << 1)) {
       PORTFCLR = (0x1 << 1);
       if (direction != LEFT) {
@@ -46,7 +42,7 @@ void user_isr( void ) {
         in_startscreen = 0;
       }
     }
-    // btn2 interrupt turn left
+    // btn2 turn left and continue from startscreen and game_over_screen
     if (PORTD & (0x1 << 5)) {
       PORTDCLR = (0x1 << 5);
       if (direction != RIGHT) {
@@ -59,7 +55,7 @@ void user_isr( void ) {
         in_startscreen = 0;
       }
     }
-    // btn3 interrupt turn up
+    // btn3 turn up and continue from startscreen and game_over_screen
     if (PORTD & (0x1 << 6)) {
       PORTDCLR = (0x1 << 6);
       if (direction != DOWN) {
@@ -72,7 +68,7 @@ void user_isr( void ) {
         in_startscreen = 0;
       }
     }
-    // btn4 interrupt turn down
+    // btn4 turn down and continue from startscreen and game_over_screen
     if (PORTD & (0x1 << 7)) {
       PORTDCLR = (0x1 << 7);
       if (direction != UP) {
