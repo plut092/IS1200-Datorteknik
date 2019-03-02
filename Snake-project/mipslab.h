@@ -47,8 +47,10 @@ extern const uint8_t maxwidth;
 extern const uint8_t maxheight;
 extern uint8_t row;
 extern uint8_t col;
-extern int dir_count;
 extern int random_seed;
+extern int in_game;
+extern int game_over;
+extern int score;
 
 
 //Snake orientation
@@ -57,18 +59,22 @@ extern int random_seed;
 #define DOWN        2
 #define LEFT        3
 #define DIR_NULL    4 // directon null
-#define FOOD        5
-#define WALL        6
+#define WALL        5
 
 //Snake functions
-void snake_remove_tail();
-void snake_move();
-void snake_eat();
-void run();
-void put_food();
-void draw_init_game();
 void random_seed_generator();
 int random(int min, int max);
+void snake_remove_tail();
+void snake_move();
+void put_food();
+void draw_init_game();
+void snake_eat();
+void run();
+int get_button(int n);
+int get_all_buttons();
+void startscreen();
+void game_over_screen();
+void clear_screen();
 
 
 /* Declare bitmap array containing font */

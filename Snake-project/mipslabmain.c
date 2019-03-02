@@ -55,28 +55,36 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 
 	display_init();
-	display_string(0, "SNAKE");
-	display_string(1, "press any");
-	display_string(2, "button to");
-	display_string(3, "continue");
-	display_update_string();
-
-	display_image(96, icon);
+	startscreen();
 
 	labinit(); /* Do any lab-specific initialization */
 
-	while (!(PORTF & (0x1 << 1))){
-		delay(1);
+	while (!((PORTF & (0x1 << 1)) | (PORTD & (0x1 << 5)) |  (PORTD & (0x1 << 6)) |  (PORTD & (0x1 << 7)))) {
+		quicksleep(1);
 	}
 	PORTFCLR = (0x1 << 1);
-
+	PORTDCLR = (0x7 << 5);
+	
 	/* Get a random seed for FOOD spawnposition */
 	random_seed_generator();
 
 
 	while( 1 )
 	{
-	  labwork(); /* Do lab-specific things again and again */
+		while (in_game) {
+	  	labwork(); /* Do lab-specific things again and again */
+		}
+		clear_screen();
+		quicksleep(200000);
+		game_over_screen();
+		quicksleep(20000000);
+		while (!((PORTF & (0x1 << 1)) | (PORTD & (0x1 << 5)) |  (PORTD & (0x1 << 6)) |  (PORTD & (0x1 << 7)))) {
+			quicksleep(1);
+			random_seed_generator();
+		}
+		PORTFCLR = (0x1 << 1);
+		PORTDCLR = (0x7 << 5);
+		draw_init_game();
 	}
 
 	return 0;

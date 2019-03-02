@@ -24,28 +24,12 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
 //Snakefunctions
-void draw_init_game() {
-	int i = 0;
-  int j = 0;
-  for (i = 0; i < maxheight; i++) {
-    for (j = 0; j < maxwidth; j++) {
-      snakearray[i][j] = DIR_NULL; // set direction to previous pixel to NULL = 4
-      if (i == 0 || (i == 31) || (j == 0) || (j == 127)) {
-        pixel[i][j] = 1;
-        snakearray[i][j] = WALL;
-      }
-      else{
-        pixel[i][j] = 0;
-      }
-    }
-  }
-  pixel[row][col] = 1;
-  direction = RIGHT;
-}
 void random_seed_generator() {
   int random_time = TMR2;
   int random_memory_address;
+	int random_memory_address2;
   random_seed = random_time ^ random_memory_address;
+	random_seed += random_memory_address2;
 }
 int random(int min, int max) {
 	random_seed_generator();
@@ -100,6 +84,45 @@ void snake_move() {
   snakearray[row][col] = ((direction + 2) % 4); // opposite direction to find last pixel
   snake_remove_tail();
 }
+void put_food() {
+	int has_not_put_food = 1;
+
+	while (has_not_put_food) {
+		// gets random position within the walls and not occupied by the snake
+		random_seed_generator();
+		int random_row = random(1, (maxheight - 2));
+		int random_col = random(1, (maxwidth - 2));
+		if (pixel[random_row][random_col] == 0) {
+			pixel[random_row][random_col] = 1;
+			has_not_put_food = 0;
+			score++;
+		}
+	}
+}
+void draw_init_game() {
+	int i = 0;
+  int j = 0;
+	direction 			= RIGHT;
+	row							= 16;
+	col							= 64;
+	in_game 				= 1;
+	game_over				= 0;
+	score						= -1;
+  for (i = 0; i < maxheight; i++) {
+    for (j = 0; j < maxwidth; j++) {
+      snakearray[i][j] = DIR_NULL; // set direction to previous pixel to NULL = 4
+      if (i == 0 || (i == (maxheight - 1)) || (j == 0) || (j == (maxwidth - 1))) {
+        pixel[i][j] = 1;
+        snakearray[i][j] = WALL;
+      }
+      else{
+        pixel[i][j] = 0;
+      }
+    }
+  }
+  pixel[row][col] = 1; // snake startpos
+	put_food();
+}
 void snake_eat() {
 	if (direction == UP) {
 		row--;
@@ -114,20 +137,6 @@ void snake_eat() {
 	// puts direction opposite direction to find last pixel
   snakearray[row][col] = ((direction + 2) % 4);
 	put_food();
-}
-void put_food() {
-	int has_not_put_food = 1;
-
-	while (has_not_put_food) {
-		// gets random position within the walls and not occupied by the snake
-		int random_row = random(1, maxheight - 2);
-		int random_col = random(1, maxwidth - 2);
-		if (pixel[random_row][random_col] == 0) {
-			snakearray[random_row][random_col] = FOOD;
-			pixel[random_row][random_col] = 1;
-			has_not_put_food = 0;
-		}
-	}
 }
 void run() {
 	uint8_t next_row = row;
@@ -148,8 +157,12 @@ void run() {
 	if (pixel[next_row][next_col] == 1) {
 		if (next_s_value == WALL) {
 			/* Game over - crashed with a wall */
+			in_game = 0;
+			game_over = 1;
 		} else if(next_s_value >= 0 && next_s_value < 4) {
 			/* Game over - Snake ate itself */
+			in_game = 0;
+			game_over = 1;
 		} else { // next pixel is FOOD
 			snake_eat();
 		}
@@ -157,6 +170,58 @@ void run() {
 	else { // nothing in next position
 		snake_move();
 	}
+}
+int get_button(int n) {
+	int button = 0;
+	if (n == 1) {
+		button |= ((PORTF & (0x1 << 1)) >> 1);
+		PORTFCLR = (0x1 << 1);
+	} else if(n == 2) {
+		button |= ((PORTD & (0X1 << 5)) >> 5);
+		PORTDCLR = (0x1 << 5);
+	} else if(n == 3) {
+		button |= ((PORTD & (0X1 << 6)) >> 6);
+		PORTDCLR = (0x1 << 6);
+	} else if(n == 4) {
+		button |= ((PORTD & (0X1 << 7)) >> 7);
+		PORTDCLR = (0x1 << 7);
+	} else {
+		return 0;
+	}
+}
+int get_all_buttons() {
+	int buttons = 0;
+	int button1 = get_button(1);
+	int button2 = get_button(2);
+	int button3 = get_button(3);
+	int button4 = get_button(4);
+	buttons |= (button1 | (button2 << 1) | (button3 << 2) | (button4 << 3));
+}
+void startscreen() {
+	display_string(0, "SNAKE");
+	display_string(1, "press any");
+	display_string(2, "button to");
+	display_string(3, "continue");
+	display_update_string();
+	display_image(96, icon);
+}
+void game_over_screen() {
+	display_string(0, "GAME OVER");
+	display_string(1, "score");
+	display_string(2, itoaconv(score));
+	display_string(3, "continue");
+	display_update_string();
+}
+void clear_screen() {
+	int i;
+	int j;
+	for (i = 0; i < maxheight; i++) {
+		for (j = 0; j < maxwidth; j++) {
+			pixel[i][j] = 1;
+			snakearray[i][j] = 0;
+		}
+	}
+	display_update_screen();
 }
 
 /* quicksleep:

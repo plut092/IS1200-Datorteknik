@@ -14,14 +14,17 @@ uint8_t pixel[32][128];
 uint8_t snakearray[32][128];
 
 //Variabels
-const uint8_t maxwidth 		= 128;
-const uint8_t maxheight 	= 32;
+const uint8_t maxwidth 				= 128;
+const uint8_t maxheight 			= 32;
 int random_seed;
-uint8_t direction = RIGHT;
-uint8_t row = 16;
-uint8_t col = 64;
+uint8_t direction 						= RIGHT;
+uint8_t row 									= 16;
+uint8_t col 									= 64;
 uint8_t pixel[32][128];
 uint8_t snakearray[32][128];
+int in_game 									= 1;
+int game_over									= 0;
+int score											= -1;
 
 
 const uint8_t const font[] = {
