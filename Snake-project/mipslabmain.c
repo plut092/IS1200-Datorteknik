@@ -59,18 +59,17 @@ int main(void) {
 
 	labinit(); /* Do any lab-specific initialization */
 
-	while (!((PORTF & (0x1 << 1)) | (PORTD & (0x1 << 5)) |  (PORTD & (0x1 << 6)) |  (PORTD & (0x1 << 7)))) {
+	while (in_startscreen) {
+		// wait for buttonpress in user_isr
 		quicksleep(1);
 	}
-	PORTFCLR = (0x1 << 1);
-	PORTDCLR = (0x7 << 5);
-	
+
 	/* Get a random seed for FOOD spawnposition */
 	random_seed_generator();
 
-
 	while( 1 )
 	{
+		draw_init_game();
 		while (in_game) {
 	  	labwork(); /* Do lab-specific things again and again */
 		}
@@ -78,13 +77,12 @@ int main(void) {
 		quicksleep(200000);
 		game_over_screen();
 		quicksleep(20000000);
-		while (!((PORTF & (0x1 << 1)) | (PORTD & (0x1 << 5)) |  (PORTD & (0x1 << 6)) |  (PORTD & (0x1 << 7)))) {
+
+		game_over = 1;
+		while(game_over) {
+			//wait for buttonpress in user_isr
 			quicksleep(1);
-			random_seed_generator();
 		}
-		PORTFCLR = (0x1 << 1);
-		PORTDCLR = (0x7 << 5);
-		draw_init_game();
 	}
 
 	return 0;

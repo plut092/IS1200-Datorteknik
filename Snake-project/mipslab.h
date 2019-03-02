@@ -48,6 +48,7 @@ extern const uint8_t maxheight;
 extern uint8_t row;
 extern uint8_t col;
 extern int random_seed;
+extern int in_startscreen;
 extern int in_game;
 extern int game_over;
 extern int score;
@@ -60,6 +61,9 @@ extern int score;
 #define LEFT        3
 #define DIR_NULL    4 // directon null
 #define WALL        5
+#define FOOD        6
+//Defines
+#define BUTTON_DEBOUNCE 1000
 
 //Snake functions
 void random_seed_generator();
@@ -70,8 +74,6 @@ void put_food();
 void draw_init_game();
 void snake_eat();
 void run();
-int get_button(int n);
-int get_all_buttons();
 void startscreen();
 void game_over_screen();
 void clear_screen();

@@ -22,9 +22,10 @@ uint8_t row 									= 16;
 uint8_t col 									= 64;
 uint8_t pixel[32][128];
 uint8_t snakearray[32][128];
+int in_startscreen						= 1;
 int in_game 									= 1;
 int game_over									= 0;
-int score											= -1;
+int score											=-1;
 
 
 const uint8_t const font[] = {

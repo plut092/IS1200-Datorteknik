@@ -39,12 +39,24 @@ void user_isr( void ) {
       if (direction != LEFT) {
         direction = RIGHT;
       }
+      if (game_over) {
+        game_over = 0;
+      }
+      if (in_startscreen) {
+        in_startscreen = 0;
+      }
     }
     // btn2 interrupt turn left
     if (PORTD & (0x1 << 5)) {
       PORTDCLR = (0x1 << 5);
       if (direction != RIGHT) {
         direction = LEFT;
+      }
+      if (game_over) {
+        game_over = 0;
+      }
+      if (in_startscreen) {
+        in_startscreen = 0;
       }
     }
     // btn3 interrupt turn up
@@ -53,12 +65,24 @@ void user_isr( void ) {
       if (direction != DOWN) {
         direction = UP;
       }
+      if (game_over) {
+        game_over = 0;
+      }
+      if (in_startscreen) {
+        in_startscreen = 0;
+      }
     }
     // btn4 interrupt turn down
     if (PORTD & (0x1 << 7)) {
       PORTDCLR = (0x1 << 7);
       if (direction != UP) {
         direction = DOWN;
+      }
+      if (game_over) {
+        game_over = 0;
+      }
+      if (in_startscreen) {
+        in_startscreen = 0;
       }
     }
   }
@@ -96,14 +120,11 @@ void labinit( void ) {
   IECSET(0) = 0x1 << 15; // enable SW3 interrupt
 
   enable_interrupt();
-
-  // Draws the game background walls, food and the snake's start position
-  draw_init_game();
 }
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
-  run();
   display_update_screen();
+  run();
   quicksleep(800000);
 }

@@ -94,6 +94,7 @@ void put_food() {
 		int random_col = random(1, (maxwidth - 2));
 		if (pixel[random_row][random_col] == 0) {
 			pixel[random_row][random_col] = 1;
+			snakearray[random_row][random_col] = FOOD;
 			has_not_put_food = 0;
 			score++;
 		}
@@ -158,12 +159,10 @@ void run() {
 		if (next_s_value == WALL) {
 			/* Game over - crashed with a wall */
 			in_game = 0;
-			game_over = 1;
 		} else if(next_s_value >= 0 && next_s_value < 4) {
 			/* Game over - Snake ate itself */
 			in_game = 0;
-			game_over = 1;
-		} else { // next pixel is FOOD
+		} else if (next_s_value == FOOD){ // next pixel is FOOD
 			snake_eat();
 		}
 	}
@@ -171,32 +170,7 @@ void run() {
 		snake_move();
 	}
 }
-int get_button(int n) {
-	int button = 0;
-	if (n == 1) {
-		button |= ((PORTF & (0x1 << 1)) >> 1);
-		PORTFCLR = (0x1 << 1);
-	} else if(n == 2) {
-		button |= ((PORTD & (0X1 << 5)) >> 5);
-		PORTDCLR = (0x1 << 5);
-	} else if(n == 3) {
-		button |= ((PORTD & (0X1 << 6)) >> 6);
-		PORTDCLR = (0x1 << 6);
-	} else if(n == 4) {
-		button |= ((PORTD & (0X1 << 7)) >> 7);
-		PORTDCLR = (0x1 << 7);
-	} else {
-		return 0;
-	}
-}
-int get_all_buttons() {
-	int buttons = 0;
-	int button1 = get_button(1);
-	int button2 = get_button(2);
-	int button3 = get_button(3);
-	int button4 = get_button(4);
-	buttons |= (button1 | (button2 << 1) | (button3 << 2) | (button4 << 3));
-}
+
 void startscreen() {
 	display_string(0, "SNAKE");
 	display_string(1, "press any");
