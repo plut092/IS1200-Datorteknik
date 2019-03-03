@@ -14,7 +14,6 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-int timeoutcount = 0;
 
 /* Interrupt Service Routine */
 void user_isr( void ) {

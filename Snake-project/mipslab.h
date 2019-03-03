@@ -62,8 +62,6 @@ extern int score;
 #define DIR_NULL    4 // directon null
 #define WALL        5
 #define FOOD        6
-//Defines
-#define BUTTON_DEBOUNCE 1000
 
 //Snake functions
 void random_seed_generator();

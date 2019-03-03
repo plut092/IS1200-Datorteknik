@@ -1,3 +1,32 @@
+/*
+	This project was written 2019 by Johan Engström and last edited 2019-03-03.
+	It is based on the labfiles of lab 3 written by Axel Isaksson and F Lundevall.
+
+	Parts written by Johan Engström is:
+	void random_seed_generator()
+	int random()
+	void snake_remove_tail()
+	void snake_move()
+	void put_food()
+	void draw_init_game()
+	void snake_eat()
+	void run()
+	startscreen()
+	void game_over_screen()
+	void clear_screen()
+	void display_update_screen()
+	void user_isr()
+	void labwork()
+	Data and variables for snake-project in mipslabdata.c
+
+	The main function part after hardware setup and initialization was
+	written by Engström.
+
+	The function void display_update_string(void) had it's name changed from
+	diplsay_update().
+*/
+
+
 /* mipslabmain.c
 
    This file written 2015 by Axel Isaksson,

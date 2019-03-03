@@ -10,10 +10,11 @@
 
 char textbuffer[4][16];
 
+// Data for snake-project
 uint8_t pixel[32][128];
 uint8_t snakearray[32][128];
 
-//Variabels
+//Variabels for snake-project
 const uint8_t maxwidth 				= 128;
 const uint8_t maxheight 			= 32;
 int random_seed;
