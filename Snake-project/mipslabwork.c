@@ -18,10 +18,6 @@
 /* Interrupt Service Routine */
 void user_isr( void ) {
   if (IFS(0) & (0x1 << 8)) {
-    /*
-      check  timeoutcount == 10 for IRS to
-      run every 10 invocations of user_irs
-    */
     IFSCLR(0) = 0x1 << 8; // set TMR2 IF to 0
 
     if(IFS(0) & (0x1 << 15)) {
