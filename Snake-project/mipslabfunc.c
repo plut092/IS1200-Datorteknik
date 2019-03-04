@@ -23,6 +23,185 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
+//Snakefunctions
+void random_seed_generator() { // psuedo random seed generator
+  int random_time = TMR2;
+  int random_memory_address;
+	int random_memory_address2;
+  random_seed = random_time ^ random_memory_address;
+	random_seed += random_memory_address2;
+}
+int random(int min, int max) {
+	random_seed_generator();
+	return (random_seed % (max - min) + 1);
+}
+void snake_remove_tail() {
+  uint8_t row_current = row;
+  uint8_t col_current = col;
+  uint8_t row_next = row_current;
+  uint8_t col_next = col_current;
+  uint8_t has_not_removed = 1;
+
+
+  if (snakearray[row_current][col_current] == DIR_NULL) {
+    return; // head = tail
+  }
+  while (has_not_removed) {
+    if (snakearray[row_current][col_current] == UP) {
+      row_next = row_current - 1;
+    }
+    if (snakearray[row_current][col_current] == RIGHT) {
+      col_next = col_current + 1;
+    }
+    if (snakearray[row_current][col_current] == DOWN) {
+      row_next = row_current + 1;
+    }
+    if (snakearray[row_current][col_current] == LEFT) {
+      col_next = col_current - 1;
+    }
+    if (snakearray[row_next][col_next] == DIR_NULL) {
+      snakearray[row_current][col_current] = DIR_NULL; // new tail
+      pixel[row_next][col_next] = 0;
+      has_not_removed = 0;
+    }
+    else {
+      row_current = row_next;
+      col_current = col_next;
+    }
+  }
+}
+void snake_move() {
+	if (direction == UP) {
+		row--;
+	} else if (direction == RIGHT) {
+		col++;
+	} else if (direction == DOWN){
+		row++;
+	} else { // LEFT
+		col--;;
+	}
+  pixel[row][col] = 1;
+  snakearray[row][col] = ((direction + 2) % 4); // opposite direction to find last pixel
+  snake_remove_tail();
+}
+void put_food() {
+	int has_not_put_food = 1;
+
+	while (has_not_put_food) {
+		// gets random position within the walls and not occupied by the snake
+		random_seed_generator();
+		int random_row = random(1, (maxheight - 2));
+		int random_col = random(1, (maxwidth - 2));
+		if (pixel[random_row][random_col] == 0) {
+			pixel[random_row][random_col] = 1;
+			snakearray[random_row][random_col] = FOOD;
+			has_not_put_food = 0;
+			score++;
+		}
+	}
+}
+void draw_init_game() {
+	int i = 0;
+  int j = 0;
+  // reset values to start the game
+	direction 			= RIGHT;
+	row							= 16;
+	col							= 64;
+	in_game 				= 1;
+	game_over				= 0;
+	score						= -1;
+  // init walls for gameplay
+  for (i = 0; i < maxheight; i++) {
+    for (j = 0; j < maxwidth; j++) {
+      snakearray[i][j] = DIR_NULL; // set direction to previous pixel to NULL = 4
+      if (i == 0 || (i == (maxheight - 1)) || (j == 0) || (j == (maxwidth - 1))) {
+        pixel[i][j] = 1;
+        snakearray[i][j] = WALL;
+      }
+      else{
+        pixel[i][j] = 0;
+      }
+    }
+  }
+  pixel[row][col] = 1; // snake startpos
+	put_food();
+}
+void snake_eat() {
+	if (direction == UP) {
+		row--;
+	} else if (direction == RIGHT) {
+		col++;
+	} else if (direction == DOWN){
+		row++;
+	} else { // LEFT
+		col--;;
+	}
+  pixel[row][col] = 1;
+	// puts direction opposite direction to find last pixel
+  snakearray[row][col] = ((direction + 2) % 4);
+	put_food();
+}
+void run() {
+	uint8_t next_row = row;
+	uint8_t next_col = col;
+	uint8_t next_s_value; // next snakearray value
+
+  // check what direction next position will be
+	if (direction == UP) {
+		next_row = row - 1;
+	} else if (direction == RIGHT) {
+		next_col = col + 1;
+	} else if (direction == DOWN){
+		next_row = row + 1;
+	} else { // LEFT
+		next_col = col - 1;
+	}
+	next_s_value = snakearray[next_row][next_col]; // temp variable for next pos
+	// Check if next position of the snake is the wall, itself or food
+	if (pixel[next_row][next_col] == 1) {
+		if (next_s_value == WALL) {
+			/* Game over - crashed with a wall */
+			in_game = 0;
+		} else if(next_s_value >= 0 && next_s_value < 4) {
+			/* Game over - Snake ate itself */
+			in_game = 0;
+		} else if (next_s_value == FOOD){ // next pixel is FOOD
+			snake_eat();
+		}
+	}
+	else { // nothing in next position
+		snake_move();
+	}
+}
+
+void startscreen() {
+	display_string(0, "SNAKE");
+	display_string(1, "press any");
+	display_string(2, "button to");
+	display_string(3, "continue");
+	display_update_string();
+	display_image(96, icon);
+}
+void game_over_screen() {
+	display_string(0, "GAME OVER");
+	display_string(1, "score");
+	display_string(2, itoaconv(score));
+	display_string(3, "continue");
+	display_update_string();
+}
+void clear_screen() {
+  // sets every pixel to white when game over
+	int i;
+	int j;
+	for (i = 0; i < maxheight; i++) {
+		for (j = 0; j < maxwidth; j++) {
+			pixel[i][j] = 1;
+			snakearray[i][j] = 0;
+		}
+	}
+	display_update_screen();
+}
+
 /* quicksleep:
    A simple function to create a small delay.
    Very inefficient use of computing resources,
@@ -40,8 +219,7 @@ void quicksleep(int cyc) {
    3rd pair counts minutes.
    4th pair (least significant byte) counts seconds.
    In most labs, only the 3rd and 4th pairs are used. */
-void tick( unsigned int * timep )
-{
+void tick( unsigned int * timep ) {
   /* Get current value, store locally */
   register unsigned int t = * timep;
   t += 1; /* Increment local copy */
@@ -80,13 +258,12 @@ void tick( unsigned int * timep )
    repeated calls to display_image; display_image overwrites
    about half of the digits shown by display_debug.
 */
-void display_debug( volatile int * const addr )
-{
+void display_debug( volatile int * const addr ) {
   display_string( 1, "Addr" );
   display_string( 2, "Data" );
   num32asc( &textbuffer[1][6], (int) addr );
   num32asc( &textbuffer[2][6], *addr );
-  display_update();
+  display_update_string();
 }
 
 uint8_t spi_send_recv(uint8_t data) {
@@ -95,7 +272,6 @@ uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 1));
 	return SPI2BUF;
 }
-
 void display_init(void) {
         DISPLAY_CHANGE_TO_COMMAND_MODE;
 	quicksleep(10);
@@ -125,7 +301,6 @@ void display_init(void) {
 
 	spi_send_recv(0xAF);
 }
-
 void display_string(int line, char *s) {
 	int i;
 	if(line < 0 || line >= 4)
@@ -140,7 +315,6 @@ void display_string(int line, char *s) {
 		} else
 			textbuffer[line][i] = ' ';
 }
-
 void display_image(int x, const uint8_t *data) {
 	int i, j;
 
@@ -159,8 +333,29 @@ void display_image(int x, const uint8_t *data) {
 			spi_send_recv(~data[i*32 + j]);
 	}
 }
+void display_update_screen(){
+	int d_col, d_page, d_page_row, value; // display_column/page/page_row
+	for(d_page = 0; d_page < 4; d_page++){
+		DISPLAY_CHANGE_TO_COMMAND_MODE;
+		spi_send_recv(0x22);
+		spi_send_recv(d_page);
 
-void display_update(void) {
+		spi_send_recv(0x00);
+		spi_send_recv(0x10);
+
+		DISPLAY_CHANGE_TO_DATA_MODE;
+
+		for(d_col = 0; d_col < 128; d_col++){
+			value = (pixel[d_page * 8][d_col]); //d_page * 8 lowest bit d_page_row 7:0
+			for(d_page_row = 1; d_page_row < 8; d_page_row++){
+        // puts the pixel state in value from lowest bit in byte to higest
+				value |= (pixel[d_page * 8 + d_page_row][d_col]) << d_page_row;
+			}
+			spi_send_recv(value);
+		}
+	}
+}
+void display_update_string(void) {
 	int i, j, k;
 	int c;
 	for(i = 0; i < 4; i++) {
@@ -186,8 +381,7 @@ void display_update(void) {
 
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
-static void num32asc( char * s, int n )
-{
+static void num32asc( char * s, int n ) {
   int i;
   for( i = 28; i >= 0; i -= 4 )
     *s++ = "0123456789ABCDEF"[ (n >> i) & 15 ];
@@ -201,8 +395,8 @@ static void num32asc( char * s, int n )
  */
 #define PRIME_FALSE   0     /* Constant to help readability. */
 #define PRIME_TRUE    1     /* Constant to help readability. */
-int nextprime( int inval )
-{
+
+int nextprime( int inval ) {
    register int perhapsprime = 0; /* Holds a tentative prime while we check it. */
    register int testfactor; /* Holds various factors for which we test perhapsprime. */
    register int found;      /* Flag, false until we find a prime. */
@@ -289,8 +483,8 @@ int nextprime( int inval )
  * may not allow this straight away.
  */
 #define ITOA_BUFSIZ ( 24 )
-char * itoaconv( int num )
-{
+
+char * itoaconv( int num ) {
   register int i, sign;
   static char itoa_buffer[ ITOA_BUFSIZ ];
   static const char maxneg[] = "-2147483648";
