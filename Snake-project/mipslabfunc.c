@@ -101,7 +101,7 @@ void draw_init_game() {
 	col							= 64;
 	in_game 				= 1;
 	game_over				= 0;
-	score						= -1;
+	score						=-1;
   // init walls for gameplay
   for (i = 0; i < maxheight; i++) {
     for (j = 0; j < maxwidth; j++) {
@@ -175,7 +175,7 @@ void startscreen() {
 	display_image(96, icon);
 }
 void game_over_screen() {
-	display_string(0, "GAME OVER");
+  display_string(0, "GAME OVER");
 	display_string(1, "Your score");
 	display_string(2, itoaconv(score));
 	display_string(3, "continue");

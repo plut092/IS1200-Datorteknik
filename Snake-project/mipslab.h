@@ -53,7 +53,6 @@ extern int in_game;
 extern int game_over;
 extern int score;
 
-
 //Snake orientation
 #define UP          0
 #define RIGHT       1

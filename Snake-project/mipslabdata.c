@@ -28,7 +28,6 @@ int in_game 									= 1;
 int game_over									= 0;
 int score											=-1;
 
-
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
