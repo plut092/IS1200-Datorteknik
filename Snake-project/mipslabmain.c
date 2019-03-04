@@ -94,7 +94,8 @@ int main(void) {
 	}
 
 	/* Get a random seed for FOOD spawnposition */
-	random_seed_generator();
+	// random_seed_generator();
+	srand((unsigned) TMR2);
 
 	while( 1 )
 	{

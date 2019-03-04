@@ -64,8 +64,6 @@ extern int score;
 #define FOOD        6
 
 //Snake functions
-void random_seed_generator();
-int random(int min, int max);
 void snake_remove_tail();
 void snake_move();
 void put_food();
@@ -75,6 +73,10 @@ void run();
 void startscreen();
 void game_over_screen();
 void clear_screen();
+
+// include stdlib
+void *stdout;
+void *random;
 
 
 /* Declare bitmap array containing font */

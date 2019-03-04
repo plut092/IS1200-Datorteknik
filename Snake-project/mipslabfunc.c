@@ -24,16 +24,8 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
 //Snakefunctions
-void random_seed_generator() { // psuedo random seed generator
-  int random_time = TMR2;
-  int random_memory_address;
-	int random_memory_address2;
-  random_seed = random_time ^ random_memory_address;
-	random_seed += random_memory_address2;
-}
-int random(int min, int max) {
-	random_seed_generator();
-	return (random_seed % (max - min) + 1);
+int random_number(int min, int max) {
+  return min + (rand() % (max - min + 1));
 }
 void snake_remove_tail() {
   uint8_t row_current = row;
@@ -89,9 +81,9 @@ void put_food() {
 
 	while (has_not_put_food) {
 		// gets random position within the walls and not occupied by the snake
-		random_seed_generator();
-		int random_row = random(1, (maxheight - 2));
-		int random_col = random(1, (maxwidth - 2));
+		int wall_offset = 0;
+		int random_row = random_number(1+wall_offset, (maxheight-2) - wall_offset);
+		int random_col = random_number(1+wall_offset, (maxwidth-2) - wall_offset);
 		if (pixel[random_row][random_col] == 0) {
 			pixel[random_row][random_col] = 1;
 			snakearray[random_row][random_col] = FOOD;
@@ -184,7 +176,7 @@ void startscreen() {
 }
 void game_over_screen() {
 	display_string(0, "GAME OVER");
-	display_string(1, "score");
+	display_string(1, "Your score");
 	display_string(2, itoaconv(score));
 	display_string(3, "continue");
 	display_update_string();
