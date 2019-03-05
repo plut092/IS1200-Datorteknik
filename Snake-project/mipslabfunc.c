@@ -81,7 +81,7 @@ void put_food() {
 
 	while (has_not_put_food) {
 		// gets random position within the walls and not occupied by the snake
-		int wall_offset = 0;
+		int wall_offset = 5;
 		int random_row = random_number(1+wall_offset, (maxheight-2) - wall_offset);
 		int random_col = random_number(1+wall_offset, (maxwidth-2) - wall_offset);
 		if (pixel[random_row][random_col] == 0) {
@@ -165,7 +165,6 @@ void run() {
 		snake_move();
 	}
 }
-
 void startscreen() {
 	display_string(0, "SNAKE");
 	display_string(1, "press any");
